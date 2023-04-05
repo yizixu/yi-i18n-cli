@@ -1,7 +1,7 @@
 import fs from 'fs'
 import PROJECT_CONFIG from './const'
 
-function initProject(path) {
+function initProject (path) {
   /** 初始化配置文件夹 */
   if (path) {
     if (!fs.existsSync(path)) {
@@ -12,7 +12,7 @@ function initProject(path) {
     initProjectJson(path)
   } else {
     if (!fs.existsSync(PROJECT_CONFIG.dir)) {
-      fs.mkdirSync(PROJECT_CONFIG.dir);
+      fs.mkdirSync(PROJECT_CONFIG.dir)
       console.log(`默认${PROJECT_CONFIG.dir}目录已生成\n`)
     } else {
       console.log(`默认${PROJECT_CONFIG.dir}目录已存在\n`)
@@ -22,7 +22,7 @@ function initProject(path) {
   return true
 }
 
-function initProjectJson(projectDir) {
+function initProjectJson (projectDir) {
   const CONFIG_PATH = PROJECT_CONFIG.configFile
   if (fs.existsSync(CONFIG_PATH)) {
     console.log(`配置文件${CONFIG_PATH}已存在\n`)
@@ -37,12 +37,16 @@ function initProjectJson(projectDir) {
           branch: '',
           i18n: ''
         }
-      ]
+      ],
+      baidu: {
+        appId: '',
+        appKey: ''
+      }
     }, null, 2)
     fs.writeFileSync(CONFIG_PATH, fileContent)
     console.log(`配置文件${CONFIG_PATH}已生成\n`)
   }
-  console.log(`请按照文档指引填写项目来源及国际化目录地址，然后请执行--git拉取国际化代码\n`)
+  console.log('请按照文档指引填写项目来源及国际化目录地址，然后请执行--git拉取国际化代码\n')
 }
 
 export { initProject, initProjectJson }
