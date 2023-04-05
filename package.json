@@ -18,10 +18,7 @@
   },
   "author": "865729489@qq.com",
   "license": "ISC",
-  "devDependencies": {
-    "@babel/cli": "^7.21.0",
-    "@babel/core": "^7.21.4",
-    "@babel/preset-env": "^7.21.4",
+  "dependencies": {
     "commander": "^10.0.0",
     "csv-parse": "^5.3.6",
     "csv-writer": "^1.6.0",
@@ -29,6 +26,11 @@
     "md5": "^2.3.0",
     "node-xlsx": "^0.21.0",
     "ora": "^3.4.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.21.0",
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4"
   },
   "registry": {
     "type": "git",
