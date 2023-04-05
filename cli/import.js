@@ -1,16 +1,17 @@
 import fs from 'fs'
+import path from 'path'
 import nodeXlsx from 'node-xlsx'
 import { getContentByExt } from './utils'
 
-function getMessagesToImport(file) {
+function getMessagesToImport (file) {
   const content = nodeXlsx.parse(file)
   if (!content) return false
   const mainSheet = content[0]
   const body = mainSheet.data.slice(1)
-  return body;
+  return body
 }
 
-function importFile(filePath, sourceFilePath, lang = 'unknown') {
+function importFile (filePath, sourceFilePath, lang = 'unknown') {
   const bodyArray = getMessagesToImport(filePath)
   const fileName = path.basename(sourceFilePath)
   const dirName = path.dirname(sourceFilePath)
@@ -23,7 +24,6 @@ function importFile(filePath, sourceFilePath, lang = 'unknown') {
       const next = pre[cur]
       if (typeof next === 'string') {
         pre[cur] = item[8]
-        return
       }
       return pre[cur]
     }, sourceFileContent)

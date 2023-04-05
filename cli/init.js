@@ -14,8 +14,9 @@ function initProject(path) {
     if (!fs.existsSync(PROJECT_CONFIG.dir)) {
       fs.mkdirSync(PROJECT_CONFIG.dir);
       console.log(`默认${PROJECT_CONFIG.dir}目录已生成\n`)
+    } else {
+      console.log(`默认${PROJECT_CONFIG.dir}目录已存在\n`)
     }
-    console.log(`默认${PROJECT_CONFIG.dir}目录已存在\n`)
     initProjectJson(PROJECT_CONFIG.dir)
   }
   return true

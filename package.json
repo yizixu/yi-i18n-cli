@@ -8,7 +8,10 @@
     "translate",
     "yizixu"
   ],
-  "main": "index.js",
+  "main": "bin/index.js",
+  "files": [
+    "bin"
+  ],
   "scripts": {
     "build": "babel cli -d bin",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,7 +20,7 @@
     "yi": "bin/index.js"
   },
   "author": "865729489@qq.com",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "commander": "^10.0.0",
     "csv-parse": "^5.3.6",
@@ -30,11 +33,16 @@
   "devDependencies": {
     "@babel/cli": "^7.21.0",
     "@babel/core": "^7.21.4",
-    "@babel/preset-env": "^7.21.4"
+    "@babel/preset-env": "^7.21.4",
+    "eslint": "^8.37.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1"
   },
   "registry": {
     "type": "git",
-    "url": "git+https://github.com/yizixu/yi-i18n-cli.git"
+    "url": "git://github.com/yizixu/yi-i18n-cli.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
