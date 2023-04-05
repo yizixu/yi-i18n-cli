@@ -6,5 +6,8 @@
 export default {
   dir: '.project',
   configFile: 'yi.config.json',
-  csvPath: "translations.csv",
-};
+  csvPath: 'translations.csv',
+  regExp: {
+    en: /[a-zA-Z]/g
+  }
+}

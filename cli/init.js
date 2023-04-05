@@ -29,7 +29,7 @@ function initProjectJson (projectDir) {
   } else {
     const fileContent = JSON.stringify({
       dir: projectDir,
-      csvPath: 'translations.csv',
+      csvPath: 'C:/translations.csv',
       git: [
         {
           name: '',

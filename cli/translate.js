@@ -3,9 +3,9 @@ import md5 from 'md5'
 import path from 'path'
 import { getContentByExt, sleep } from './utils'
 import { readFromCsv, appendToCsv } from './csv'
-import PROJECT_CONFIG from './const'
+import PROJECT_CONST from './const'
 
-const csvFilePath = path.resolve(process.cwd(), PROJECT_CONFIG.csvPath)
+const csvFilePath = path.resolve(process.cwd(), PROJECT_CONST.csvPath)
 
 const translateText = async (text, fromLang, toLang) => {
   const cacheKey = `${text}_${fromLang}_${toLang}` // 构造缓存键
@@ -24,7 +24,7 @@ const translateText = async (text, fromLang, toLang) => {
 
 const baiduTranslate = async (text, fromLang, toLang) => {
   await sleep(1, 2)
-  const USER_CONFIG_PATH = path.resolve(process.cwd(), PROJECT_CONFIG.configFile)
+  const USER_CONFIG_PATH = path.resolve(process.cwd(), PROJECT_CONST.configFile)
   const USER_CONFIG = require(USER_CONFIG_PATH)
   const { appId, appKey } = USER_CONFIG.baidu || {}
   const apiUrl = `http://api.fanyi.baidu.com/api/trans/vip/translate?q=${text}&from=${fromLang}&to=${toLang}&appid=${appId}&salt=${Date.now()}&sign=${md5(appId + text + Date.now() + appKey)}` // API URL
@@ -49,15 +49,23 @@ const splitStrings = (text, maxLength) => {
   chunks.push(text)
   return chunks
 }
+// 计算字符是否是当前语言
+const isLang = (lang, value) => {
+  const reg = PROJECT_CONST.regExp[lang]
+  const count = (value.match(reg) || []).length
+  return (count / value.length) > 0.8
+}
 
-const splitJson = (json, maxLength = 2000) => {
+const splitJson = (json, toLang) => {
   const strChunks = []
+  const maxLength = 2000
   const joinString = (json) => {
     let str = ''
     for (const [, value] of Object.entries(json)) {
       if (typeof value === 'object') {
         str += joinString(value)
       } else {
+        if (isLang(toLang, value)) continue
         if ((str.length + value.length) > maxLength) {
           strChunks.push(str)
           str = ''
@@ -76,7 +84,7 @@ const splitJson = (json, maxLength = 2000) => {
 }
 
 const translateJson = async (json, fromLang, toLang) => {
-  const strArr = splitJson(json)
+  const strArr = splitJson(json, toLang)
   let translatedStr = ''
   for (const value of strArr) {
     if (typeof value === 'object') {
@@ -91,12 +99,14 @@ const translateJson = async (json, fromLang, toLang) => {
   return translatedStr
 }
 
-const fillToJson = (json, strArr) => {
+const fillToJson = (json, strArr, toLang) => {
   const result = Array.isArray(json) ? [] : {}
   for (const [key, value] of Object.entries(json)) {
     if (typeof value === 'object') {
       result[key] = fillToJson(value, strArr)
     } else {
+      console.log(isLang(toLang, value), value)
+      if (isLang(toLang, value)) continue
       result[key] = strArr.shift().trim()
     }
   }
@@ -110,7 +120,7 @@ async function translate (filePath, from, to) {
   const targetPath = path.resolve(dirName, `translate.${fileName}`)
   const fileJson = require(filePath)
   const translatedString = await translateJson(fileJson, from, to)
-  const fileContent = await fillToJson(fileJson, translatedString.split('/n'))
+  const fileContent = await fillToJson(fileJson, translatedString.split('/n'), to)
   fs.writeFileSync(targetPath, getContentByExt(JSON.stringify(fileContent, null, 2), extName), err => {
     console.log(`写入文件错误：${err}`)
     return false

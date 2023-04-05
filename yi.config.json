@@ -1,0 +1,16 @@
+{
+  "dir": "test",
+  "csvPath": "C:/translations.csv",
+  "git": [
+    {
+      "name": "",
+      "repository": "",
+      "branch": "",
+      "i18n": ""
+    }
+  ],
+  "baidu": {
+    "appId": "20210428000806315",
+    "appKey": "Mv6WVhuifWkikO2RfkLt"
+  }
+}
