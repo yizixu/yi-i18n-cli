@@ -13,7 +13,9 @@
     "bin"
   ],
   "scripts": {
-    "build": "babel cli -d bin",
+    "build": "rollup -c rollup.config.js",
+    "lint": "eslint --fix ./",
+    "babel": "babel cli -d bin",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
@@ -34,11 +36,18 @@
     "@babel/cli": "^7.21.0",
     "@babel/core": "^7.21.4",
     "@babel/preset-env": "^7.21.4",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-terser": "^0.4.0",
     "eslint": "^8.37.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.7.0",
-    "eslint-plugin-promise": "^6.1.1"
+    "eslint-plugin-promise": "^6.1.1",
+    "rollup": "^3.20.2",
+    "rollup-plugin-delete": "^2.0.0"
   },
   "registry": {
     "type": "git",

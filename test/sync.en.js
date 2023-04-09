@@ -9,5 +9,5 @@ module.exports = {
     "test1": "I love China",
     "test2": "I Love My Family"
   },
-  "add": "Add"
+  "add": "添加"
 }

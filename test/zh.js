@@ -1,5 +1,5 @@
 module.exports = {
-  name: '名称',
+  name: '名称,昵称',
   age: 'Age',
   hobby: [
     'Basketball',
@@ -8,5 +8,6 @@ module.exports = {
   test: {
     test1: '我爱 China',
     test2: 'I Love My Family'
-  }
+  },
+  add: '添加'
 }

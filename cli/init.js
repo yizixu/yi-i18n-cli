@@ -29,7 +29,6 @@ function initProjectJson (projectDir) {
   } else {
     const fileContent = JSON.stringify({
       dir: projectDir,
-      csvPath: 'C:/translations.csv',
       git: [
         {
           name: '',
@@ -38,9 +37,15 @@ function initProjectJson (projectDir) {
           i18n: ''
         }
       ],
+      regExp: {
+        zh: /[\u4e00-\u9fa5]/
+      },
       baidu: {
         appId: '',
-        appKey: ''
+        appKey: '',
+        keyMap: {
+          'zh-CN': 'zh'
+        }
       }
     }, null, 2)
     fs.writeFileSync(CONFIG_PATH, fileContent)

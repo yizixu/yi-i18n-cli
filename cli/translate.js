@@ -1,62 +1,8 @@
 import fs from 'fs'
-import md5 from 'md5'
 import path from 'path'
-import { getContentByExt, sleep } from './utils'
-import { readFromCsv, appendToCsv } from './csv'
-import PROJECT_CONST from './const'
+import { getContentByExt, isOriginLang, translateText, splitStrings } from './utils'
 
-const csvFilePath = path.resolve(process.cwd(), PROJECT_CONST.csvPath)
-
-const translateText = async (text, fromLang, toLang) => {
-  const cacheKey = `${text}_${fromLang}_${toLang}` // 构造缓存键
-
-  const records = await readFromCsv(csvFilePath)
-  const cachedTranslation = records.find(record => record[0] === cacheKey)
-  // check if the translation result is already cached
-  if (cachedTranslation) {
-    return cachedTranslation[1]
-  }
-  // 如果缓存中没有对应的翻译结果，则调用百度翻译接口进行翻译，并将结果保存到缓存中
-  const apiResult = await baiduTranslate(text, fromLang, toLang)
-  await appendToCsv(csvFilePath, [cacheKey, apiResult])
-  return apiResult
-}
-
-const baiduTranslate = async (text, fromLang, toLang) => {
-  await sleep(1, 2)
-  const USER_CONFIG_PATH = path.resolve(process.cwd(), PROJECT_CONST.configFile)
-  const USER_CONFIG = require(USER_CONFIG_PATH)
-  const { appId, appKey } = USER_CONFIG.baidu || {}
-  const apiUrl = `http://api.fanyi.baidu.com/api/trans/vip/translate?q=${text}&from=${fromLang}&to=${toLang}&appid=${appId}&salt=${Date.now()}&sign=${md5(appId + text + Date.now() + appKey)}` // API URL
-  const response = await fetch(apiUrl)
-  const result = await response.json()
-  if (result.error_code) {
-    console.error(result.error_msg)
-    return text
-  } else {
-    return result.trans_result[0].dst
-  }
-}
-
-// 切分字符串
-const splitStrings = (text, maxLength) => {
-  const chunks = []
-  while (text.length > maxLength) {
-    const chunk = text.slice(0, maxLength)
-    chunks.push(chunk)
-    text = text.slice(maxLength)
-  }
-  chunks.push(text)
-  return chunks
-}
-// 计算字符是否是当前语言
-const isLang = (lang, value) => {
-  const reg = PROJECT_CONST.regExp[lang]
-  const count = (value.match(reg) || []).length
-  return (count / value.length) > 0.8
-}
-
-const splitJson = (json, toLang) => {
+const splitJson = (json, fromLang) => {
   const strChunks = []
   const maxLength = 2000
   const joinString = (json) => {
@@ -65,7 +11,7 @@ const splitJson = (json, toLang) => {
       if (typeof value === 'object') {
         str += joinString(value)
       } else {
-        if (isLang(toLang, value)) continue
+        if (!isOriginLang(fromLang, value)) continue
         if ((str.length + value.length) > maxLength) {
           strChunks.push(str)
           str = ''
@@ -84,7 +30,7 @@ const splitJson = (json, toLang) => {
 }
 
 const translateJson = async (json, fromLang, toLang) => {
-  const strArr = splitJson(json, toLang)
+  const strArr = splitJson(json, fromLang)
   let translatedStr = ''
   for (const value of strArr) {
     if (typeof value === 'object') {
@@ -99,29 +45,29 @@ const translateJson = async (json, fromLang, toLang) => {
   return translatedStr
 }
 
-const fillToJson = (json, strArr, toLang) => {
+const fillToJson = (json, strArr, fromLang) => {
   const result = Array.isArray(json) ? [] : {}
   for (const [key, value] of Object.entries(json)) {
     if (typeof value === 'object') {
-      result[key] = fillToJson(value, strArr)
+      result[key] = fillToJson(value, strArr, fromLang)
     } else {
-      console.log(isLang(toLang, value), value)
-      if (isLang(toLang, value)) continue
-      result[key] = strArr.shift().trim()
+      if (!isOriginLang(fromLang, value)) {
+        result[key] = value
+      } else {
+        result[key] = (strArr.shift() || '').trim()
+      }
     }
   }
   return result
 }
 
 async function translate (filePath, from, to) {
-  const fileName = path.basename(filePath)
-  const dirName = path.dirname(filePath)
-  const extName = path.extname(filePath)
-  const targetPath = path.resolve(dirName, `translate.${fileName}`)
+  const fileParams = path.parse(filePath)
+  const targetPath = path.resolve(fileParams.dir, `translate.${fileParams.base}`)
   const fileJson = require(filePath)
   const translatedString = await translateJson(fileJson, from, to)
-  const fileContent = await fillToJson(fileJson, translatedString.split('/n'), to)
-  fs.writeFileSync(targetPath, getContentByExt(JSON.stringify(fileContent, null, 2), extName), err => {
+  const fileContent = await fillToJson(fileJson, translatedString.split('/n'), from)
+  fs.writeFileSync(targetPath, getContentByExt(JSON.stringify(fileContent, null, 2), fileParams.ext), err => {
     console.log(`写入文件错误：${err}`)
     return false
   })
