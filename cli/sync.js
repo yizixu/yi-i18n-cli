@@ -6,7 +6,7 @@ const syncJson = (json, targetJson) => {
   const obj = Array.isArray(json) ? [] : {}
   for (const [key, value] of Object.entries(json)) {
     if (typeof value === 'object') {
-      obj[key] = syncJson(value, targetJson[key])
+      obj[key] = targetJson[key] ? syncJson(value, targetJson[key]) : value
     } else {
       obj[key] = targetJson[key] ? targetJson[key] : json[key]
     }

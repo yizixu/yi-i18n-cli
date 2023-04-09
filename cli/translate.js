@@ -5,16 +5,17 @@ import { getContentByExt, isOriginLang, translateText, splitStrings, getLangKey 
 const splitJson = (json, fromLang) => {
   const strChunks = []
   const maxLength = 100
-  const joinString = (json) => {
-    let str = ''
-    for (const [, value] of Object.entries(json)) {
+  let str = ''
+  const joinString = (obj) => {
+    for (const [, value] of Object.entries(obj)) {
       if (typeof value === 'object') {
-        str += joinString(value)
+        joinString(value)
       } else {
         if (!isOriginLang(fromLang, value)) continue
         if ((str.length + value.length) > maxLength) {
           strChunks.push(str)
-          str = ''
+          str = `${value}/n`
+          continue
         }
         if (value.length > maxLength) {
           strChunks.push(splitStrings(value, maxLength))
