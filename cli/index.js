@@ -25,7 +25,6 @@ program
 
 const options = program.opts()
 const args = program.args
-console.log(options, args)
 
 if (options.init) {
   (async () => {

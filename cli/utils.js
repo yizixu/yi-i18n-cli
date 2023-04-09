@@ -6,11 +6,7 @@ import PROJECT_CONST from './const'
 import { readFromCsv, appendToCsv } from './csv'
 
 const USER_CONFIG_PATH = path.resolve(process.cwd(), PROJECT_CONST.configFile)
-if (!fs.existsSync(USER_CONFIG_PATH)) {
-  console.log(`${PROJECT_CONST.configFile}配置文件不存在，请先执行--init初始化配置`)
-  process.exit(1)
-}
-const USER_CONFIG = require(USER_CONFIG_PATH)
+let USER_CONFIG = null
 
 /**
  * 进度条加载
@@ -82,6 +78,13 @@ function splitStrings (text, maxLength) {
  * @return {boolean} isTrue
  */
 function isOriginLang (lang, value) {
+  if (!fs.existsSync(USER_CONFIG_PATH)) {
+    console.log(`${PROJECT_CONST.configFile}配置文件不存在，请先执行--init初始化配置`)
+    process.exit(1)
+  }
+  if (!USER_CONFIG) {
+    USER_CONFIG = require(USER_CONFIG_PATH)
+  }
   if (!USER_CONFIG.regExp || !USER_CONFIG.regExp[lang]) {
     console.log(`${PROJECT_CONST.configFile}配置文件中属性regExp未配置正确，请先正确配置源语言正则`)
     process.exit(1)
@@ -120,6 +123,10 @@ async function translateText (text, fromLang, toLang) {
  * @returns {string} 翻译结果
  */
 async function baiduTranslate (text, fromLang, toLang) {
+  if (!fs.existsSync(USER_CONFIG_PATH)) {
+    console.log(`${PROJECT_CONST.configFile}配置文件不存在，请先执行--init初始化配置`)
+    process.exit(1)
+  }
   await sleep(1, 2)
   const { appId, appKey } = USER_CONFIG.baidu || {}
   const apiUrl = `http://api.fanyi.baidu.com/api/trans/vip/translate?q=${text}&from=${fromLang}&to=${toLang}&appid=${appId}&salt=${Date.now()}&sign=${md5(appId + text + Date.now() + appKey)}` // API URL

@@ -36,6 +36,5 @@ export default {
     // json()
     // babel({ babelHelpers: 'bundled', exclude: 'node_modules/**' }),
     terser()
-  ],
-  external: ['fs', 'path', 'child_process', 'util']
+  ]
 }

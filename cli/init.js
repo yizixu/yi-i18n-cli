@@ -38,7 +38,7 @@ function initProjectJson (projectDir) {
         }
       ],
       regExp: {
-        zh: /[\u4e00-\u9fa5]/
+        zh: ''
       },
       baidu: {
         appId: '',
