@@ -28,7 +28,7 @@ const translateJson = async (json, fromLang, toLang, maxLength = 2000) => {
 
 async function translateSingle (filePath, from, to) {
   const fileParams = path.parse(filePath)
-  const targetPath = path.resolve(fileParams.dir, `translate.${fileParams.base}`)
+  const targetPath = path.resolve(fileParams.dir, `translate.${to}${fileParams.ext}`)
   const fileJson = require(filePath)
   const result = await translateJson(fileJson, from, to)
   fs.writeFileSync(targetPath, getContentByExt(JSON.stringify(result, null, 2), fileParams.ext), err => {

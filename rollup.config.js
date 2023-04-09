@@ -1,7 +1,7 @@
-// import babel from '@rollup/plugin-babel'
+// import { babel } from '@rollup/plugin-babel'
 // import resolve from '@rollup/plugin-node-resolve'
-// import commonjs from '@rollup/plugin-commonjs'
-// import terser from '@rollup/plugin-terser'
+import commonjs from '@rollup/plugin-commonjs'
+import terser from '@rollup/plugin-terser'
 // import json from '@rollup/plugin-json'
 import del from 'rollup-plugin-delete'
 
@@ -10,28 +10,32 @@ export default {
   output: [
     {
       file: './bin/index.cjs.js',
-      format: 'cjs'
+      format: 'cjs',
+      banner: '#!/usr/bin/env node'
     },
     {
       file: './bin/index.es.js',
-      format: 'es'
+      format: 'es',
+      banner: '#!/usr/bin/env node'
     },
     {
       file: './bin/index.amd.js',
-      format: 'amd'
+      format: 'amd',
+      banner: '#!/usr/bin/env node'
     },
     {
       file: './bin/index.umd.js',
-      format: 'umd'
+      format: 'umd',
+      banner: '#!/usr/bin/env node'
     }
   ],
   plugins: [
-    del({ targets: 'bin/*' })
+    del({ targets: 'bin/*' }),
+    commonjs(),
     // resolve(),
-    // json(),
-    // commonjs(),
+    // json()
     // babel({ babelHelpers: 'bundled', exclude: 'node_modules/**' }),
-    // 压缩代码
-    // terser()
-  ]
+    terser()
+  ],
+  external: ['fs', 'path', 'child_process', 'util']
 }

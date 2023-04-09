@@ -1,27 +1,28 @@
 {
   "name": "yi-i18n-cli",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "A tool library about everything",
   "keywords": [
     "i18n",
     "uppercase",
     "translate",
-    "yizixu"
+    "sync"
   ],
-  "main": "bin/index.js",
+  "type": "commonjs",
+  "main": "bin/index.cjs.js",
   "files": [
     "bin"
   ],
   "scripts": {
-    "build": "rollup -c rollup.config.js",
+    "build": "rollup -c rollup.config.js --bundleConfigAsCjs",
     "lint": "eslint --fix ./",
     "babel": "babel cli -d bin",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "yi-test": "bin/index.js"
+    "yi": "bin/index.cjs.js"
   },
-  "author": "865729489@qq.com",
+  "author": "Yizixu <865729489@qq.com>",
   "license": "MIT",
   "dependencies": {
     "commander": "^10.0.0",
@@ -51,7 +52,7 @@
   },
   "registry": {
     "type": "git",
-    "url": "git://github.com/yizixu/yi-i18n-cli.git"
+    "url": "https://github.com/yizixu/yi-i18n-cli.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

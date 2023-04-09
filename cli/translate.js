@@ -63,7 +63,7 @@ const fillToJson = (json, strArr, fromLang) => {
 
 async function translate (filePath, from, to) {
   const fileParams = path.parse(filePath)
-  const targetPath = path.resolve(fileParams.dir, `translate.${fileParams.base}`)
+  const targetPath = path.resolve(fileParams.dir, `translate.${to}${fileParams.ext}`)
   const fileJson = require(filePath)
   const translatedString = await translateJson(fileJson, from, to)
   const fileContent = await fillToJson(fileJson, translatedString.split('/n'), from)
