@@ -1,10 +1,10 @@
 import fs from 'fs'
 import path from 'path'
-import { getContentByExt, isOriginLang, translateText, splitStrings } from './utils'
+import { getContentByExt, isOriginLang, translateText, splitStrings, getLangKey } from './utils'
 
 const splitJson = (json, fromLang) => {
   const strChunks = []
-  const maxLength = 2000
+  const maxLength = 100
   const joinString = (json) => {
     let str = ''
     for (const [, value] of Object.entries(json)) {
@@ -62,6 +62,8 @@ const fillToJson = (json, strArr, fromLang) => {
 }
 
 async function translate (filePath, from, to) {
+  from = getLangKey(from)
+  to = getLangKey(to)
   const fileParams = path.parse(filePath)
   const targetPath = path.resolve(fileParams.dir, `translate.${to}${fileParams.ext}`)
   const fileJson = require(filePath)

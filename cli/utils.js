@@ -8,6 +8,16 @@ import { readFromCsv, appendToCsv } from './csv'
 const USER_CONFIG_PATH = path.resolve(process.cwd(), PROJECT_CONST.configFile)
 let USER_CONFIG = null
 
+function initUserConfig () {
+  if (!fs.existsSync(USER_CONFIG_PATH)) {
+    console.log(`${PROJECT_CONST.configFile}配置文件不存在，请先执行--init初始化配置`)
+    process.exit(1)
+  }
+  if (!USER_CONFIG) {
+    USER_CONFIG = require(USER_CONFIG_PATH)
+  }
+}
+
 /**
  * 进度条加载
  * @param text
@@ -47,8 +57,8 @@ function getContentByExt (content, ext) {
  * @param max
  * @return callback
  */
-function sleep (min, max) {
-  const duration = Math.floor(Math.random() * max) + min
+function sleep (max) {
+  const duration = (Math.random() + max).toFixed(2)
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve()
@@ -61,7 +71,7 @@ function sleep (min, max) {
  * @param {*} maxLength 最大长度
  * @returns {array} 文字数组
  */
-function splitStrings (text, maxLength) {
+function splitStrings (text, maxLength = 100) {
   const chunks = []
   while (text.length > maxLength) {
     const chunk = text.slice(0, maxLength)
@@ -78,13 +88,7 @@ function splitStrings (text, maxLength) {
  * @return {boolean} isTrue
  */
 function isOriginLang (lang, value) {
-  if (!fs.existsSync(USER_CONFIG_PATH)) {
-    console.log(`${PROJECT_CONST.configFile}配置文件不存在，请先执行--init初始化配置`)
-    process.exit(1)
-  }
-  if (!USER_CONFIG) {
-    USER_CONFIG = require(USER_CONFIG_PATH)
-  }
+  initUserConfig()
   if (!USER_CONFIG.regExp || !USER_CONFIG.regExp[lang]) {
     console.log(`${PROJECT_CONST.configFile}配置文件中属性regExp未配置正确，请先正确配置源语言正则`)
     process.exit(1)
@@ -123,11 +127,8 @@ async function translateText (text, fromLang, toLang) {
  * @returns {string} 翻译结果
  */
 async function baiduTranslate (text, fromLang, toLang) {
-  if (!fs.existsSync(USER_CONFIG_PATH)) {
-    console.log(`${PROJECT_CONST.configFile}配置文件不存在，请先执行--init初始化配置`)
-    process.exit(1)
-  }
-  await sleep(1, 2)
+  initUserConfig()
+  await sleep(1)
   const { appId, appKey } = USER_CONFIG.baidu || {}
   const apiUrl = `http://api.fanyi.baidu.com/api/trans/vip/translate?q=${text}&from=${fromLang}&to=${toLang}&appid=${appId}&salt=${Date.now()}&sign=${md5(appId + text + Date.now() + appKey)}` // API URL
   const response = await fetch(apiUrl)
@@ -140,4 +141,19 @@ async function baiduTranslate (text, fromLang, toLang) {
   }
 }
 
-export { spinning, getContentByExt, sleep, isOriginLang, translateText, splitStrings }
+function getLangKey (lang) {
+  initUserConfig()
+  const { keyMap = {} } = USER_CONFIG.baidu || {}
+  const res = keyMap[lang]
+  return res || lang
+}
+
+export {
+  spinning,
+  getContentByExt,
+  sleep,
+  isOriginLang,
+  translateText,
+  splitStrings,
+  getLangKey
+}

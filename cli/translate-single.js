@@ -1,8 +1,8 @@
 import fs from 'fs'
 import path from 'path'
-import { getContentByExt, isOriginLang, translateText, splitStrings } from './utils'
+import { getContentByExt, isOriginLang, translateText, splitStrings, getLangKey } from './utils'
 
-const translateJson = async (json, fromLang, toLang, maxLength = 2000) => {
+const translateJson = async (json, fromLang, toLang, maxLength = 100) => {
   const result = Array.isArray(json) ? [] : {}
   for (const [key, value] of Object.entries(json)) {
     if (typeof value === 'object') {
@@ -27,6 +27,8 @@ const translateJson = async (json, fromLang, toLang, maxLength = 2000) => {
 }
 
 async function translateSingle (filePath, from, to) {
+  from = getLangKey(from)
+  to = getLangKey(to)
   const fileParams = path.parse(filePath)
   const targetPath = path.resolve(fileParams.dir, `translate.${to}${fileParams.ext}`)
   const fileJson = require(filePath)

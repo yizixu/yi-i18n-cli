@@ -1,5 +1,6 @@
 import fs from 'fs'
 import PROJECT_CONFIG from './const'
+import { getContentByExt } from './utils'
 
 function initProject (path) {
   /** 初始化配置文件夹 */
@@ -27,7 +28,7 @@ function initProjectJson (projectDir) {
   if (fs.existsSync(CONFIG_PATH)) {
     console.log(`配置文件${CONFIG_PATH}已存在\n`)
   } else {
-    const fileContent = JSON.stringify({
+    const fileContent = {
       dir: projectDir,
       git: [
         {
@@ -47,11 +48,11 @@ function initProjectJson (projectDir) {
           'zh-CN': 'zh'
         }
       }
-    }, null, 2)
-    fs.writeFileSync(CONFIG_PATH, fileContent)
+    }
+    fs.writeFileSync(CONFIG_PATH, getContentByExt(JSON.stringify(fileContent, null, 2), '.js'))
     console.log(`配置文件${CONFIG_PATH}已生成\n`)
   }
-  console.log('请按照文档指引填写项目来源及国际化目录地址，然后请执行--git拉取国际化代码\n')
+  console.log(`请按照文档指引填写${CONFIG_PATH}\n`)
 }
 
 export { initProject, initProjectJson }
