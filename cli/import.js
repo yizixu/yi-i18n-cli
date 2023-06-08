@@ -1,21 +1,20 @@
 import fs from 'fs'
+import path from 'path'
 import nodeXlsx from 'node-xlsx'
 import { getContentByExt } from './utils'
 
-function getMessagesToImport(file) {
+function getMessagesToImport (file) {
   const content = nodeXlsx.parse(file)
   if (!content) return false
   const mainSheet = content[0]
   const body = mainSheet.data.slice(1)
-  return body;
+  return body
 }
 
-function importFile(filePath, sourceFilePath, lang = 'unknown') {
+function importFile (filePath, sourceFilePath, lang = 'unknown') {
   const bodyArray = getMessagesToImport(filePath)
-  const fileName = path.basename(sourceFilePath)
-  const dirName = path.dirname(sourceFilePath)
-  const extName = path.extname(sourceFilePath)
-  const targetPath = path.resolve(dirName, `import.${lang}.${fileName}`)
+  const sourceFileParams = path.parse(sourceFilePath)
+  const targetPath = path.resolve(sourceFileParams.dir, `import.${lang}.${sourceFileParams.base}`)
   const sourceFileContent = require(sourceFilePath)
   bodyArray.filter(item => !!item[0]).forEach(item => {
     const paths = item[1] && item[1].split('-')
@@ -23,12 +22,11 @@ function importFile(filePath, sourceFilePath, lang = 'unknown') {
       const next = pre[cur]
       if (typeof next === 'string') {
         pre[cur] = item[8]
-        return
       }
       return pre[cur]
     }, sourceFileContent)
   })
-  fs.writeFileSync(targetPath, getContentByExt(JSON.stringify(sourceFileContent, null, 2), extName), err => {
+  fs.writeFileSync(targetPath, getContentByExt(JSON.stringify(sourceFileContent, null, 2), sourceFileParams.ext), err => {
     console.log(`写入文件错误：${err}`)
     return false
   })

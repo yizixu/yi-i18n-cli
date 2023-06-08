@@ -5,6 +5,6 @@
 
 export default {
   dir: '.project',
-  configFile: 'yi.config.json',
-  csvPath: "translations.csv",
-};
+  configFile: 'yi.config.js',
+  csvPath: 'translations.csv'
+}
